@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TARS Voice Bot</title>
+</head>
+<body>
+    <h1>TARS Voice Bot</h1>
+    <textarea id="text-input" rows="4" cols="50" placeholder="Type your message here..."></textarea><br>
+    <button onclick="speak()">Speak</button>
+    <audio id="audio-player" controls></audio>
+
+    <script>
+        async function speak() {
+            const text = document.getElementById('text-input').value;
+            const response = await fetch('/speak', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text })
+            });
+
+            if (response.ok) {
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audioPlayer = document.getElementById('audio-player');
+                audioPlayer.src = audioUrl;
+                audioPlayer.play();
+            } else {
+                const error = await response.json();
+                alert('Error: ' + error.error);
+            }
+        }
+    </script>
+</body>
+</html>
